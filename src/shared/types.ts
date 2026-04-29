@@ -48,6 +48,7 @@ export interface CopyRule {
   max_open_contracts: number | null
   copy_stops: boolean
   copy_limits: boolean
+  copy_market: boolean
 }
 
 export interface CopyRuleInput {
@@ -61,6 +62,7 @@ export interface CopyRuleInput {
   max_open_contracts?: number | null
   copy_stops?: boolean
   copy_limits?: boolean
+  copy_market?: boolean
 }
 
 export interface Group {

@@ -86,6 +86,10 @@ const migrations: { version: number; up: string }[] = [
       );
     `,
   },
+  {
+    version: 2,
+    up: `ALTER TABLE copy_rules ADD COLUMN copy_market INTEGER NOT NULL DEFAULT 1;`,
+  },
 ]
 
 export function migrate(): void {

@@ -41,7 +41,7 @@ export function LeaderSelector({ accounts, selectedId, onSelect }: Props) {
       >
         {selected ? (
           <>
-            <span className="w-2 h-2 rounded-full bg-green animate-pulse-glow shrink-0" />
+            <span className="w-2 h-2 rounded-full animate-pulse-glow shrink-0" style={{ background: 'var(--green)' }} />
             <span className="font-mono text-sm truncate">{selected.name}</span>
             {selected.balance != null && (
               <span className="ml-auto font-mono text-xs shrink-0" style={{ color: 'var(--text-muted)' }}>

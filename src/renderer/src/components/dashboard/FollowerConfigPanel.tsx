@@ -19,6 +19,7 @@ export function FollowerConfigPanel({ rule, onClose }: Props) {
     max_open_contracts: rule.max_open_contracts ?? null,
     copy_stops: rule.copy_stops,
     copy_limits: rule.copy_limits,
+    copy_market: rule.copy_market,
   })
 
   const [saving, setSaving] = useState(false)
@@ -145,7 +146,16 @@ export function FollowerConfigPanel({ rule, onClose }: Props) {
 
           <div>
             <label className="block text-xs font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>Copy Settings</label>
-            <div className="flex gap-4">
+            <div className="flex gap-4 flex-wrap">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={form.copy_market}
+                  onChange={(e) => update('copy_market', e.target.checked)}
+                  className="accent-amber"
+                />
+                <span className="text-xs font-mono" style={{ color: 'var(--text-primary)' }}>Market Orders</span>
+              </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"

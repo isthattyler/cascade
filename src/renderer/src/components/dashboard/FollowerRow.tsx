@@ -35,6 +35,11 @@ export function FollowerRow({ rule, account, onToggle, onEdit, onDelete }: Props
       </div>
 
       <div className="flex items-center gap-1.5 shrink-0">
+        {rule.copy_market && (
+          <span className="text-[9px] font-mono px-1 py-0.5 rounded" style={{ background: 'rgba(245, 166, 35, 0.12)', color: 'var(--accent)' }}>
+            MO
+          </span>
+        )}
         {rule.copy_stops && (
           <span className="text-[9px] font-mono px-1 py-0.5 rounded" style={{ background: 'rgba(245, 166, 35, 0.12)', color: 'var(--accent)' }}>
             SL

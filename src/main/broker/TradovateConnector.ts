@@ -128,17 +128,18 @@ export class TradovateConnector extends BaseConnector {
   // ── Auth ────────────────────────────────────────────────────────────
 
   private async authenticate(): Promise<void> {
-    const res = await axios.post(`${this.restUrl}/v1/auth/websocket`, {
-      email: this.credentials.email,
+    const res = await axios.post(`${this.restUrl}/v1/auth/accesstokenrequest`, {
+      name: this.credentials.email,
       password: this.credentials.password,
     })
 
-    if (!res.data.token) {
-      throw new Error('Authentication failed — no access token returned')
+    if (!res.data.accessToken) {
+      throw new Error(res.data.errorText || 'Authentication failed — no access token returned')
     }
 
-    this.accessToken = res.data.token
-    this.tokenExpiry = Date.now() + 86400 * 1000
+    this.accessToken = res.data.accessToken
+    this.userId = res.data.userId
+    this.tokenExpiry = new Date(res.data.expirationTime).getTime()
     this.http.defaults.headers.common['Authorization'] = `Bearer ${this.accessToken}`
   }
 

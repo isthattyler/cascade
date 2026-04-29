@@ -128,14 +128,11 @@ export class TradovateConnector extends BaseConnector {
   // ── Auth ────────────────────────────────────────────────────────────
 
   private async authenticate(): Promise<void> {
-    const res = await axios.post(`${this.restUrl}/auth/userloginwithtradingpermission`, {
+    const res = await axios.post(`${this.restUrl}/user/login`, {
       email: this.credentials.email,
       password: this.credentials.password,
       deviceId: this.deviceId,
       deviceName: 'Cascade',
-      cid: 0,
-      appRedirectUrl: '',
-      redirectUrl: '',
     })
 
     if (!res.data.accessToken) {

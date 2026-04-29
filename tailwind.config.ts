@@ -1,31 +1,31 @@
-/** @type {import('tailwindcss').Config} */
+import type { Config } from 'tailwindcss'
+
 export default {
   content: ['./src/renderer/src/**/*.{ts,tsx}', './src/renderer/index.html'],
   theme: {
     extend: {
       colors: {
-        surface: {
-          DEFAULT: '#1a1a2e',
-          light: '#222244',
-          lighter: '#2a2a4a',
-        },
-        accent: {
-          green: '#22c55e',
-          amber: '#f59e0b',
-          red: '#ef4444',
-          blue: '#3b82f6',
-        },
+        deep: '#0E0E10',
+        surface: '#18181B',
+        raised: '#1F1F23',
+        hover: '#27272B',
+        accent: '#F5A623',
+      },
+      fontFamily: {
+        display: ['"DM Serif Display"', 'serif'],
+        body: ['"DM Sans"', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'monospace'],
       },
       animation: {
-        'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
-        'flash': 'flash 0.5s ease-in-out infinite',
+        'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+        'flash-fast': 'flash-fast 0.6s ease-in-out infinite',
       },
       keyframes: {
-        pulseGlow: {
-          '0%, 100%': { boxShadow: '0 0 4px rgba(34,197,94,0.4)', opacity: '0.7' },
-          '50%': { boxShadow: '0 0 8px rgba(34,197,94,0.8)', opacity: '1' },
+        'pulse-glow': {
+          '0%, 100%': { boxShadow: '0 0 4px rgba(76, 175, 80, 0.3)' },
+          '50%': { boxShadow: '0 0 10px rgba(76, 175, 80, 0.7)' },
         },
-        flash: {
+        'flash-fast': {
           '0%, 100%': { opacity: '0.3' },
           '50%': { opacity: '1' },
         },
@@ -33,4 +33,4 @@ export default {
     },
   },
   plugins: [],
-}
+} satisfies Config

@@ -3,7 +3,7 @@ import type {
   Connection, ConnectionInput, Account, CopyRule, CopyRuleInput,
   Group, ActivityLogEntry,
   ConnectionStatusEvent, AccountStatusEvent, EngineStatusEvent, EngineEvent,
-  RiskAlertEvent, BalanceUpdateEvent,
+  RiskAlertEvent, BalanceUpdateEvent, EngineStatusEvent,
 } from '../../shared/types'
 
 const api = {
@@ -25,6 +25,12 @@ const api = {
     getRecentLogs: (limit?: number): Promise<ActivityLogEntry[]> => ipcRenderer.invoke('db:getRecentLogs', limit),
     getSetting: (key: string): Promise<string | null> => ipcRenderer.invoke('db:getSetting', key),
     setSetting: (key: string, value: string): Promise<void> => ipcRenderer.invoke('db:setSetting', key, value),
+  },
+
+  engine: {
+    start: (leaderAccountId: string): Promise<void> => ipcRenderer.invoke('engine:start', leaderAccountId),
+    stop: (): Promise<void> => ipcRenderer.invoke('engine:stop'),
+    getStatus: (): Promise<any> => ipcRenderer.invoke('engine:status'),
   },
 
   broker: {

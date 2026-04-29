@@ -1,48 +1,140 @@
 import { useEffect, useState } from 'react'
-import type { Connection } from '../../shared/types'
+import { useStore } from './store'
+import { DashboardPage } from './pages/DashboardPage'
+import { AccountsPage } from './pages/AccountsPage'
+import { CopyPage } from './pages/CopyPage'
+import { GroupsPage } from './pages/GroupsPage'
+import { SettingsPage } from './pages/SettingsPage'
+import { StatusIndicator } from './components/shared/StatusIndicator'
+import type { ConnectionStatus } from '../../shared/types'
+
+type Page = 'dashboard' | 'accounts' | 'copy' | 'groups' | 'settings'
+
+const nav: { id: Page; icon: string; label: string }[] = [
+  { id: 'dashboard', icon: '📊', label: 'Dashboard' },
+  { id: 'accounts', icon: '🔗', label: 'Accounts' },
+  { id: 'copy', icon: '📋', label: 'Copy' },
+  { id: 'groups', icon: '👥', label: 'Groups' },
+  { id: 'settings', icon: '⚙', label: 'Settings' },
+]
 
 function App() {
+  const [page, setPage] = useState<Page>('accounts')
+  const loading = useStore((s) => s.loading)
+  const connections = useStore((s) => s.connections)
+  const connectionStates = useStore((s) => s.connectionStates)
+  const engineRunning = useStore((s) => s.engineRunning)
+  const initialize = useStore((s) => s.initialize)
+
+  useEffect(() => {
+    initialize()
+  }, [initialize])
+
+  const connected = connections.filter(
+    (c) => connectionStates[c.id]?.status === 'connected'
+  ).length
+
+  const worstStatus: ConnectionStatus = connections.length === 0
+    ? 'inactive'
+    : connections.some((c) => connectionStates[c.id]?.status === 'error' || connectionStates[c.id]?.status === 'disconnected')
+      ? 'disconnected'
+      : connections.every((c) => connectionStates[c.id]?.status === 'connected')
+        ? 'connected'
+        : 'connecting'
+
+  const renderPage = () => {
+    switch (page) {
+      case 'dashboard': return <DashboardPage />
+      case 'accounts': return <AccountsPage />
+      case 'copy': return <CopyPage />
+      case 'groups': return <GroupsPage />
+      case 'settings': return <SettingsPage />
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center" style={{ background: 'var(--bg-deep)' }}>
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 rounded-full border-2 border-transparent animate-spin"
+            style={{ borderTopColor: 'var(--accent)', borderRightColor: 'var(--accent)' }}
+          />
+          <span className="font-mono text-xs" style={{ color: 'var(--text-muted)' }}>Loading…</span>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="h-screen w-screen bg-surface text-gray-100 flex flex-col">
-      <header className="h-10 bg-surface-light flex items-center px-4 border-b border-gray-700/50 draggable shrink-0">
-        <span className="text-sm font-semibold tracking-wide text-gray-300">Trade Copier</span>
-        <span className="ml-auto text-xs text-gray-500">(3/4 ● Connected)</span>
+    <div className="h-screen flex flex-col" style={{ background: 'var(--bg-deep)', color: 'var(--text-primary)' }}>
+      {/* Title Bar */}
+      <header className="draggable h-10 flex items-center px-4 shrink-0"
+        style={{ background: 'var(--bg-surface)', borderBottom: '1px solid var(--border)' }}
+      >
+        <span className="font-display text-sm tracking-wide" style={{ color: 'var(--accent)' }}>Trade Copier</span>
+        <div className="ml-auto flex items-center gap-2" style={{ color: 'var(--text-muted)' }}>
+          <span className="font-mono text-[10px]">
+            {connected}/{connections.length} active
+          </span>
+          <StatusIndicator status={worstStatus} size="sm" />
+        </div>
       </header>
+
+      {/* Body */}
       <div className="flex flex-1 overflow-hidden">
-        <nav className="w-48 bg-surface-light border-r border-gray-700/50 p-2 flex flex-col gap-1 shrink-0">
-          <NavItem icon="📊" label="Dashboard" active />
-          <NavItem icon="🔗" label="Accounts" badge="● 3/4" />
-          <NavItem icon="📋" label="Copy" badge="● Running" />
-          <NavItem icon="👥" label="Groups" />
-          <NavItem icon="⚙" label="Settings" />
-          <div className="mt-auto pt-2 border-t border-gray-700/50">
-            <div className="flex items-center gap-2 px-3 py-2 text-xs text-gray-400 bg-surface rounded cursor-default">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse-glow inline-block" />
-              3/4 ● Connected
+        {/* Sidebar */}
+        <nav className="w-48 shrink-0 flex flex-col p-2 gap-0.5"
+          style={{ background: 'var(--bg-surface)', borderRight: '1px solid var(--border)' }}
+        >
+          {nav.map((item) => {
+            const isActive = page === item.id
+            return (
+              <button
+                key={item.id}
+                onClick={() => setPage(item.id)}
+                className="flex items-center gap-2.5 px-3 py-2 rounded text-sm text-left transition-all duration-150"
+                style={{
+                  background: isActive ? 'var(--bg-hover)' : 'transparent',
+                  color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
+                  fontFamily: 'var(--font-body)',
+                  fontWeight: isActive ? 500 : 400,
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) e.currentTarget.style.background = 'var(--bg-hover)'
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) e.currentTarget.style.background = 'transparent'
+                }}
+              >
+                <span className="w-4 text-center text-sm">{item.icon}</span>
+                <span>{item.label}</span>
+                {item.id === 'copy' && engineRunning && (
+                  <span className="ml-auto w-2 h-2 rounded-full animate-pulse-glow inline-block"
+                    style={{ background: 'var(--green)' }}
+                  />
+                )}
+              </button>
+            )
+          })}
+
+          {/* Status Bar */}
+          <div className="mt-auto pt-2" style={{ borderTop: '1px solid var(--border)' }}>
+            <div className="flex items-center gap-2 px-3 py-2 rounded cursor-default"
+              style={{ background: 'var(--bg-deep)' }}
+            >
+              <StatusIndicator status={worstStatus} size="sm" />
+              <span className="font-mono text-[10px]" style={{ color: 'var(--text-muted)' }}>
+                {connected}/{connections.length} Connected
+              </span>
             </div>
           </div>
         </nav>
-        <main className="flex-1 p-6 overflow-y-auto">
-          <h1 className="text-lg font-semibold mb-4">Dashboard</h1>
-          <p className="text-gray-400 text-sm">Select a leader account and configure followers to start copying trades.</p>
+
+        {/* Main Content */}
+        <main className="flex-1 overflow-y-auto p-6">
+          {renderPage()}
         </main>
       </div>
-    </div>
-  )
-}
-
-function NavItem({ icon, label, active, badge }: { icon: string; label: string; active?: boolean; badge?: string }) {
-  return (
-    <div
-      className={`flex items-center gap-2 px-3 py-2 rounded cursor-pointer text-sm transition-colors ${
-        active
-          ? 'bg-surface-lighter text-white'
-          : 'text-gray-400 hover:bg-surface-lighter hover:text-gray-200'
-      }`}
-    >
-      <span className="w-4 text-center">{icon}</span>
-      <span>{label}</span>
-      {badge && <span className="ml-auto text-xs text-gray-500">{badge}</span>}
     </div>
   )
 }

@@ -28,7 +28,7 @@ export function FollowerRow({ rule, account, onToggle, onEdit, onDelete }: Props
           {account?.name ?? rule.follower_account}
         </span>
         <span className="font-mono text-[10px]" style={{ color: 'var(--text-muted)' }}>
-          {rule.direction === 'opposite' ? 'Opposite' : 'Same'} · {rule.lot_multiplier}x
+          {rule.direction === 'reverse' ? 'Opposite' : 'Same'} · {rule.lot_multiplier}x
           {rule.max_lot_size != null && ` · Max ${rule.max_lot_size}`}
           {rule.max_daily_loss != null && ` · -$${rule.max_daily_loss}`}
         </span>

@@ -67,11 +67,11 @@ export function FollowerConfigPanel({ rule, onClose }: Props) {
               <button
                 className="flex-1 px-3 py-2 rounded text-sm font-medium transition-all duration-150"
                 style={{
-                  background: form.direction === 'opposite' ? 'var(--red-dim)' : 'var(--bg-raised)',
-                  color: form.direction === 'opposite' ? 'var(--red)' : 'var(--text-secondary)',
-                  border: `1px solid ${form.direction === 'opposite' ? 'var(--red)' : 'var(--border)'}`,
+                  background: form.direction === 'reverse' ? 'var(--red-dim)' : 'var(--bg-raised)',
+                  color: form.direction === 'reverse' ? 'var(--red)' : 'var(--text-secondary)',
+                  border: `1px solid ${form.direction === 'reverse' ? 'var(--red)' : 'var(--border)'}`,
                 }}
-                onClick={() => update('direction', 'opposite')}
+                onClick={() => update('direction', 'reverse')}
               >
                 Opposite
               </button>

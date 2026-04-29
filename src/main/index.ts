@@ -3,6 +3,7 @@ import path from 'path'
 import { initDatabase, getRepository } from './database/schema'
 import { migrate } from './database/migrations'
 import { connectionManager } from './broker/ConnectionManager'
+import { TradeCopierEngine } from './engine/TradeCopierEngine'
 import { encryptCredentials } from './utils/credentialVault'
 import type { ConnectionInput } from '../shared/types'
 
@@ -156,6 +157,23 @@ app.whenReady().then(async () => {
 
   ipcMain.handle('credentials:encrypt', (_, plaintext: string) => encryptCredentials(plaintext))
 
+  // ── Engine IPC ────────────────────────────────────────────────
+
+  const engine = new TradeCopierEngine(pushToRenderer)
+
+  ipcMain.handle('engine:start', async (_, leaderAccountId: string) => {
+    const repo = getRepository()
+    await engine.start(leaderAccountId, repo, connectionManager)
+  })
+
+  ipcMain.handle('engine:stop', () => {
+    engine.stop()
+  })
+
+  ipcMain.handle('engine:status', () => {
+    return engine.getStatus()
+  })
+
   // ── Wire ConnectionManager → Renderer ─────────────────────────
 
   connectionManager.onStatusChange((connectionId, status, errorMsg) => {
@@ -165,6 +183,7 @@ app.whenReady().then(async () => {
   // ── Graceful Shutdown ─────────────────────────────────────────
 
   app.on('before-quit', () => {
+    engine.stop()
     connectionManager.destroy()
   })
 

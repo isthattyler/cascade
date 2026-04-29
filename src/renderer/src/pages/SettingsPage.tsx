@@ -72,7 +72,7 @@ export function SettingsPage() {
                 className="input"
                 type="number"
                 step="1"
-                min="0.01"
+                min="1"
                 value={defaultLotMult}
                 onChange={(e) => setDefaultLotMult(e.target.value)}
                 onBlur={() => save('default_lot_multiplier', defaultLotMult)}

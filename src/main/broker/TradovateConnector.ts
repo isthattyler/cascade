@@ -81,7 +81,7 @@ export class TradovateConnector extends BaseConnector {
     this.deviceId = `trade-copier-${connectionId.slice(0, 8)}`
 
     const subdomain = env === 'live' ? 'live' : 'demo'
-    this.restUrl = `https://${subdomain}.tradovateapi.com/v1`
+    this.restUrl = `https://${subdomain}.tradovateapi.com`
     this.wsUrl = `wss://${subdomain}.tradovateapi.com/v1/websocket`
 
     this.http = axios.create({
@@ -128,20 +128,17 @@ export class TradovateConnector extends BaseConnector {
   // ── Auth ────────────────────────────────────────────────────────────
 
   private async authenticate(): Promise<void> {
-    const res = await axios.post(`${this.restUrl}/user/login`, {
+    const res = await axios.post(`${this.restUrl}/v1/auth/websocket`, {
       email: this.credentials.email,
       password: this.credentials.password,
-      deviceId: this.deviceId,
-      deviceName: 'Cascade',
     })
 
-    if (!res.data.accessToken) {
+    if (!res.data.token) {
       throw new Error('Authentication failed — no access token returned')
     }
 
-    this.accessToken = res.data.accessToken
-    this.userId = res.data.userId
-    this.tokenExpiry = Date.now() + (res.data.expirationSeconds ?? 86400) * 1000
+    this.accessToken = res.data.token
+    this.tokenExpiry = Date.now() + 86400 * 1000
     this.http.defaults.headers.common['Authorization'] = `Bearer ${this.accessToken}`
   }
 
@@ -197,7 +194,7 @@ export class TradovateConnector extends BaseConnector {
       const onMsg = (data: Buffer) => {
         const text = data.toString().trim()
         if (text === 'o') {
-          ws.send(`authorize\n${this.accessToken}\n${this.userId ?? ''}`)
+          ws.send(this.accessToken ?? '')
         } else if (text === 's') {
           clearTimeout(timeout)
           ws.removeListener('message', onMsg)
@@ -211,7 +208,6 @@ export class TradovateConnector extends BaseConnector {
       }
 
       ws.on('message', onMsg)
-      ws.send('cog')
     })
   }
 
@@ -305,7 +301,7 @@ export class TradovateConnector extends BaseConnector {
 
   async getAccounts(): Promise<BrokerAccount[]> {
     await this.ensureAuth()
-    const res = await this.http.get('/account/list')
+    const res = await this.http.get('/v1/account/list')
     const accounts: TradovateAccount[] = res.data
     return accounts
       .filter((a) => a.active)
@@ -319,7 +315,7 @@ export class TradovateConnector extends BaseConnector {
 
   async getPositions(accountId: string): Promise<BrokerPosition[]> {
     await this.ensureAuth()
-    const res = await this.http.get('/position/list', { params: { accountId } })
+    const res = await this.http.get('/v1/position/list', { params: { accountId } })
     const positions: TradovatePosition[] = res.data
     return positions.map((p) => ({
       accountId: String(p.accountId),
@@ -353,7 +349,7 @@ export class TradovateConnector extends BaseConnector {
     if (order.limitPrice != null) body.price = order.limitPrice
     if (order.stopPrice != null) body.stopPrice = order.stopPrice
 
-    const res = await this.http.post('/order/place', body)
+    const res = await this.http.post('/v1/order/place', body)
 
     if (res.data?.orderStatus === 'Rejected' || res.data?.failureMessage) {
       throw new Error(`Order rejected: ${res.data.failureMessage || 'Unknown reason'}`)
@@ -377,7 +373,7 @@ export class TradovateConnector extends BaseConnector {
 
   async cancelOrder(accountId: string, orderId: string): Promise<void> {
     await this.ensureAuth()
-    await this.http.post('/order/cancel', {
+    await this.http.post('/v1/order/cancel', {
       accountId: Number(accountId),
       orderId: Number(orderId),
       isAutomated: true,

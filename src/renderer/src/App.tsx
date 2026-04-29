@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Component, type ReactNode } from 'react'
+import { BarChart3, Link2, Users, Settings } from 'lucide-react'
 import { useStore } from './store'
 import { AppLogo } from './components/shared/AppLogo'
 import { DashboardPage } from './pages/DashboardPage'
@@ -6,16 +7,46 @@ import { AccountsPage } from './pages/AccountsPage'
 import { GroupsPage } from './pages/GroupsPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { StatusIndicator } from './components/shared/StatusIndicator'
+import { ToastContainer } from './components/shared/ToastContainer'
 import type { ConnectionStatus } from '../../shared/types'
 
 type Page = 'dashboard' | 'accounts' | 'groups' | 'settings'
 
-const nav: { id: Page; icon: string; label: string }[] = [
-  { id: 'dashboard', icon: '📊', label: 'Dashboard' },
-  { id: 'accounts', icon: '🔗', label: 'Accounts' },
-  { id: 'groups', icon: '👥', label: 'Groups' },
-  { id: 'settings', icon: '⚙', label: 'Settings' },
+const nav: { id: Page; icon: ReactNode; label: string }[] = [
+  { id: 'dashboard', icon: <BarChart3 size={16} />, label: 'Dashboard' },
+  { id: 'accounts', icon: <Link2 size={16} />, label: 'Accounts' },
+  { id: 'groups', icon: <Users size={16} />, label: 'Groups' },
+  { id: 'settings', icon: <Settings size={16} />, label: 'Settings' },
 ]
+
+class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error?: Error }> {
+  constructor(props: { children: ReactNode }) {
+    super(props)
+    this.state = { hasError: false }
+  }
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error }
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="h-screen flex items-center justify-center" style={{ background: 'var(--bg-deep)' }}>
+          <div className="text-center max-w-md">
+            <span className="text-3xl mb-3 block opacity-40">!</span>
+            <h2 className="font-display text-lg mb-2" style={{ color: 'var(--text-primary)' }}>Something went wrong</h2>
+            <p className="font-mono text-xs" style={{ color: 'var(--text-muted)' }}>
+              {this.state.error?.message ?? 'Unknown error'}
+            </p>
+            <button className="btn btn-primary mt-4" onClick={() => window.location.reload()}>
+              Reload
+            </button>
+          </div>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
 
 function App() {
   const [page, setPage] = useState<Page>('accounts')
@@ -64,6 +95,7 @@ function App() {
   }
 
   return (
+    <ErrorBoundary>
     <div className="h-screen flex flex-col" style={{ background: 'var(--bg-deep)', color: 'var(--text-primary)' }}>
       {/* Title Bar */}
         <header className="draggable h-10 flex items-center px-4 shrink-0"
@@ -107,7 +139,7 @@ function App() {
                   if (!isActive) e.currentTarget.style.background = 'transparent'
                 }}
               >
-                <span className="w-4 text-center text-sm">{item.icon}</span>
+                <span className="w-4 flex items-center justify-center shrink-0">{item.icon}</span>
                 <span>{item.label}</span>
                 {item.id === 'dashboard' && engineRunning && (
                   <span className="ml-auto w-2 h-2 rounded-full animate-pulse-glow inline-block"
@@ -136,7 +168,9 @@ function App() {
           {renderPage()}
         </main>
       </div>
+      <ToastContainer />
     </div>
+    </ErrorBoundary>
   )
 }
 

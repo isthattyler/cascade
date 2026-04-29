@@ -56,7 +56,7 @@ export function DashboardPage() {
           <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded flex items-center gap-1.5"
             style={{ background: 'var(--green-dim)', color: 'var(--green)' }}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse-glow inline-block" />
+            <span className="w-1.5 h-1.5 rounded-full animate-pulse-glow inline-block" style={{ background: 'var(--green)' }} />
             Engine Running
           </span>
         )}

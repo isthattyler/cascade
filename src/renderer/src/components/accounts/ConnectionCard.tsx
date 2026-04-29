@@ -23,7 +23,7 @@ export function ConnectionCard({ connection, accounts }: Props) {
     try {
       await connectBroker(connection.id, connection.label, connection.broker_type, connection.env)
     } catch {
-      /**/
+      /* error toast is handled in store */
     }
     setConnecting(false)
   }

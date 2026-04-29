@@ -1,7 +1,15 @@
+import { useEffect, useRef } from 'react'
 import { useStore } from '../../store'
 
 export function ActivityLog() {
   const logs = useStore((s) => s.logs)
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+    }
+  }, [logs])
 
   return (
     <div>
@@ -18,7 +26,7 @@ export function ActivityLog() {
         className="rounded overflow-hidden"
         style={{ border: '1px solid var(--border)' }}
       >
-        <div className="max-h-64 overflow-y-auto">
+        <div className="max-h-64 overflow-y-auto" ref={scrollRef}>
           {logs.length === 0 ? (
             <div className="py-8 text-center">
               <p className="font-mono text-xs" style={{ color: 'var(--text-muted)' }}>

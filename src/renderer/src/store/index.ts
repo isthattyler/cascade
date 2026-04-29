@@ -10,6 +10,15 @@ export interface ConnectionState {
   lastPing?: string
 }
 
+export interface Toast {
+  id: string
+  type: 'success' | 'error' | 'warning' | 'info'
+  message: string
+  duration?: number
+}
+
+let toastCounter = 0
+
 interface AppState {
   connections: Connection[]
   accounts: Account[]
@@ -20,6 +29,7 @@ interface AppState {
   engineRunning: boolean
   loading: boolean
   selectedLeaderId: string | null
+  toasts: Toast[]
 
   setConnections: (connections: Connection[]) => void
   setAccounts: (accounts: Account[]) => void
@@ -30,6 +40,9 @@ interface AppState {
   setEngineRunning: (running: boolean) => void
   setLoading: (loading: boolean) => void
   setSelectedLeaderId: (id: string | null) => void
+
+  addToast: (toast: Omit<Toast, 'id'>) => void
+  removeToast: (id: string) => void
 
   loadConnections: () => Promise<void>
   loadAccounts: () => Promise<void>
@@ -64,6 +77,7 @@ export const useStore = create<AppState>((set, get) => ({
   engineRunning: false,
   loading: true,
   selectedLeaderId: null,
+  toasts: [],
 
   setConnections: (connections) => set({ connections }),
   setAccounts: (accounts) => set({ accounts }),
@@ -75,6 +89,13 @@ export const useStore = create<AppState>((set, get) => ({
   setEngineRunning: (running) => set({ engineRunning: running }),
   setLoading: (loading) => set({ loading }),
   setSelectedLeaderId: (id) => set({ selectedLeaderId: id }),
+
+  addToast: (toast) => {
+    const id = `toast_${++toastCounter}_${Date.now()}`
+    set((s) => ({ toasts: [...s.toasts, { ...toast, id }] }))
+  },
+  removeToast: (id) =>
+    set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
 
   loadConnections: async () => {
     const connections = await window.api.db.getConnections()
@@ -105,13 +126,17 @@ export const useStore = create<AppState>((set, get) => ({
     const encrypted = await window.api.credentials.encrypt(input.credentials)
     const conn = await window.api.db.createConnection({ ...input, credentials: encrypted })
     await get().loadConnections()
+    get().addToast({ type: 'success', message: `Connection "${input.label}" added` })
     return conn
   },
 
   deleteConnection: async (id) => {
+    const { connections } = get()
+    const conn = connections.find((c) => c.id === id)
     await get().disconnectBroker(id)
     await window.api.db.deleteConnection(id)
     await Promise.all([get().loadConnections(), get().loadAccounts()])
+    if (conn) get().addToast({ type: 'info', message: `Connection "${conn.label}" deleted` })
   },
 
   connectBroker: async (connectionId, label, brokerType, env) => {
@@ -119,11 +144,13 @@ export const useStore = create<AppState>((set, get) => ({
     try {
       await window.api.broker.connect(connectionId, label, brokerType, env)
       await get().loadAccounts()
+      get().addToast({ type: 'success', message: `"${label}" connected` })
     } catch (err) {
       get().setConnectionState(connectionId, {
         status: 'error',
         errorMsg: (err as Error).message,
       })
+      get().addToast({ type: 'error', message: `"${label}" connection failed: ${(err as Error).message}` })
       throw err
     }
   },
@@ -137,6 +164,7 @@ export const useStore = create<AppState>((set, get) => ({
   createGroup: async (name) => {
     const group = await window.api.db.createGroup(name)
     await get().loadGroups()
+    get().addToast({ type: 'success', message: `Group "${name}" created` })
     return group
   },
 
@@ -187,6 +215,12 @@ export const useStore = create<AppState>((set, get) => ({
         errorMsg: event.errorMsg,
         lastPing: event.lastPing,
       })
+      if (event.status === 'error' && event.errorMsg) {
+        get().addToast({ type: 'error', message: `Connection error: ${event.errorMsg}`, duration: 6000 })
+      }
+      if (event.status === 'connected') {
+        get().addToast({ type: 'success', message: 'Connection established', duration: 3000 })
+      }
     })
 
     api.on.accountStatus(() => {
@@ -195,17 +229,29 @@ export const useStore = create<AppState>((set, get) => ({
 
     api.on.engineStatus((event) => {
       set({ engineRunning: event.running })
+      get().addToast({
+        type: event.running ? 'success' : 'info',
+        message: event.running ? 'Copy engine started' : 'Copy engine stopped',
+        duration: 3000,
+      })
     })
 
-    api.on.engineEvent(() => {
+    api.on.engineEvent((event) => {
       get().loadLogs()
+      if (event.status === 'error' && event.errorMsg) {
+        get().addToast({ type: 'error', message: `Copy error: ${event.errorMsg}`, duration: 5000 })
+      }
     })
 
-    api.on.riskAlert(() => {
-      /**/
+    api.on.riskAlert((event) => {
+      get().addToast({
+        type: 'warning',
+        message: `Risk limit hit for ${event.followerId}: ${event.rule} (${event.current}/${event.limit})`,
+        duration: 6000,
+      })
     })
 
-    api.on.balanceUpdate((event) => {
+    api.on.balanceUpdate(() => {
       get().loadAccounts()
     })
 

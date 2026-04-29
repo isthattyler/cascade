@@ -19,6 +19,7 @@ interface AppState {
   logs: ActivityLogEntry[]
   engineRunning: boolean
   loading: boolean
+  selectedLeaderId: string | null
 
   setConnections: (connections: Connection[]) => void
   setAccounts: (accounts: Account[]) => void
@@ -28,6 +29,7 @@ interface AppState {
   setConnectionState: (id: string, state: ConnectionState) => void
   setEngineRunning: (running: boolean) => void
   setLoading: (loading: boolean) => void
+  setSelectedLeaderId: (id: string | null) => void
 
   loadConnections: () => Promise<void>
   loadAccounts: () => Promise<void>
@@ -61,6 +63,7 @@ export const useStore = create<AppState>((set, get) => ({
   logs: [],
   engineRunning: false,
   loading: true,
+  selectedLeaderId: null,
 
   setConnections: (connections) => set({ connections }),
   setAccounts: (accounts) => set({ accounts }),
@@ -71,6 +74,7 @@ export const useStore = create<AppState>((set, get) => ({
     set((s) => ({ connectionStates: { ...s.connectionStates, [id]: state } })),
   setEngineRunning: (running) => set({ engineRunning: running }),
   setLoading: (loading) => set({ loading }),
+  setSelectedLeaderId: (id) => set({ selectedLeaderId: id }),
 
   loadConnections: async () => {
     const connections = await window.api.db.getConnections()

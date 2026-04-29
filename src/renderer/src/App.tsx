@@ -3,18 +3,16 @@ import { useStore } from './store'
 import { AppLogo } from './components/shared/AppLogo'
 import { DashboardPage } from './pages/DashboardPage'
 import { AccountsPage } from './pages/AccountsPage'
-import { CopyPage } from './pages/CopyPage'
 import { GroupsPage } from './pages/GroupsPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { StatusIndicator } from './components/shared/StatusIndicator'
 import type { ConnectionStatus } from '../../shared/types'
 
-type Page = 'dashboard' | 'accounts' | 'copy' | 'groups' | 'settings'
+type Page = 'dashboard' | 'accounts' | 'groups' | 'settings'
 
 const nav: { id: Page; icon: string; label: string }[] = [
   { id: 'dashboard', icon: '📊', label: 'Dashboard' },
   { id: 'accounts', icon: '🔗', label: 'Accounts' },
-  { id: 'copy', icon: '📋', label: 'Copy' },
   { id: 'groups', icon: '👥', label: 'Groups' },
   { id: 'settings', icon: '⚙', label: 'Settings' },
 ]
@@ -47,7 +45,6 @@ function App() {
     switch (page) {
       case 'dashboard': return <DashboardPage />
       case 'accounts': return <AccountsPage />
-      case 'copy': return <CopyPage />
       case 'groups': return <GroupsPage />
       case 'settings': return <SettingsPage />
     }
@@ -112,7 +109,7 @@ function App() {
               >
                 <span className="w-4 text-center text-sm">{item.icon}</span>
                 <span>{item.label}</span>
-                {item.id === 'copy' && engineRunning && (
+                {item.id === 'dashboard' && engineRunning && (
                   <span className="ml-auto w-2 h-2 rounded-full animate-pulse-glow inline-block"
                     style={{ background: 'var(--green)' }}
                   />

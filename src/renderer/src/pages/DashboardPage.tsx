@@ -11,11 +11,12 @@ export function DashboardPage() {
   const accounts = useStore((s) => s.accounts)
   const copyRules = useStore((s) => s.copyRules)
   const engineRunning = useStore((s) => s.engineRunning)
+  const leaderId = useStore((s) => s.selectedLeaderId)
+  const setLeaderId = useStore((s) => s.setSelectedLeaderId)
   const loadCopyRules = useStore((s) => s.loadCopyRules)
   const toggleCopyRule = useStore((s) => s.toggleCopyRule)
   const deleteCopyRule = useStore((s) => s.deleteCopyRule)
 
-  const [leaderId, setLeaderId] = useState<string | null>(null)
   const [showAdd, setShowAdd] = useState(false)
   const [editingRule, setEditingRule] = useState<CopyRule | null>(null)
   const [engineLoading, setEngineLoading] = useState(false)

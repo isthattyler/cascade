@@ -12,11 +12,11 @@ import type { ConnectionStatus } from '../../shared/types'
 
 type Page = 'dashboard' | 'accounts' | 'groups' | 'settings'
 
-const nav: { id: Page; icon: ReactNode; label: string }[] = [
-  { id: 'dashboard', icon: <BarChart3 size={16} />, label: 'Dashboard' },
-  { id: 'accounts', icon: <Link2 size={16} />, label: 'Accounts' },
-  { id: 'groups', icon: <Users size={16} />, label: 'Groups' },
-  { id: 'settings', icon: <Settings size={16} />, label: 'Settings' },
+const nav: { id: Page; icon: ReactNode; label: string; activeColor: string }[] = [
+  { id: 'dashboard', icon: <BarChart3 size={16} />, label: 'Dashboard', activeColor: 'var(--accent)' },
+  { id: 'accounts', icon: <Link2 size={16} />, label: 'Accounts', activeColor: 'var(--cyan)' },
+  { id: 'groups', icon: <Users size={16} />, label: 'Groups', activeColor: 'var(--green)' },
+  { id: 'settings', icon: <Settings size={16} />, label: 'Settings', activeColor: 'var(--amber)' },
 ]
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error?: Error }> {
@@ -139,7 +139,7 @@ function App() {
                   if (!isActive) e.currentTarget.style.background = 'transparent'
                 }}
               >
-                <span className="w-4 flex items-center justify-center shrink-0">{item.icon}</span>
+                <span className="w-4 flex items-center justify-center shrink-0" style={{ color: isActive ? item.activeColor : undefined }}>{item.icon}</span>
                 <span>{item.label}</span>
                 {item.id === 'dashboard' && engineRunning && (
                   <span className="ml-auto w-2 h-2 rounded-full animate-pulse-glow inline-block"

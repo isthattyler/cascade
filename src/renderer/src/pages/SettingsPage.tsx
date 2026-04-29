@@ -71,7 +71,7 @@ export function SettingsPage() {
               <input
                 className="input"
                 type="number"
-                step="0.05"
+                step="1"
                 min="0.01"
                 value={defaultLotMult}
                 onChange={(e) => setDefaultLotMult(e.target.value)}

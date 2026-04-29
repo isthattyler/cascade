@@ -140,6 +140,7 @@ export interface BalanceUpdateEvent {
 export interface TradovateCredentials {
   email: string
   password: string
+  appId: string
 }
 
 export interface ProjectXCredentials {

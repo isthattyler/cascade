@@ -131,6 +131,7 @@ export class TradovateConnector extends BaseConnector {
     const res = await axios.post(`${this.restUrl}/v1/auth/accesstokenrequest`, {
       name: this.credentials.email,
       password: this.credentials.password,
+      appId: this.credentials.appId,
     })
 
     if (!res.data.accessToken) {

@@ -14,6 +14,7 @@ type FormData = {
   env: EnvType
   email: string
   password: string
+  appId: string
   username: string
   apiKey: string
 }
@@ -24,6 +25,7 @@ const emptyForm: FormData = {
   env: 'demo',
   email: '',
   password: '',
+  appId: '',
   username: '',
   apiKey: '',
 }
@@ -131,7 +133,7 @@ export function AddConnectionDialog({ open, onClose }: Props) {
     if (!form.label.trim()) { setError('Label is required'); return }
 
     if (isTradovate) {
-      if (!form.email.trim() || !form.password.trim()) { setError('Email and password are required'); return }
+      if (!form.email.trim() || !form.password.trim() || !form.appId.trim()) { setError('Username, password, and App ID are required'); return }
     } else {
       if (!form.username.trim() || !form.apiKey.trim()) { setError('Username and API key are required'); return }
     }
@@ -139,7 +141,7 @@ export function AddConnectionDialog({ open, onClose }: Props) {
     setSaving(true)
     try {
       const credentials = isTradovate
-        ? JSON.stringify({ email: form.email.trim(), password: form.password.trim() })
+        ? JSON.stringify({ email: form.email.trim(), password: form.password.trim(), appId: form.appId.trim() })
         : JSON.stringify({ username: form.username.trim(), apiKey: form.apiKey.trim() })
 
       await addConnection({
@@ -232,11 +234,10 @@ export function AddConnectionDialog({ open, onClose }: Props) {
           {isTradovate && (
             <>
               <div>
-                <label className="block text-xs font-medium text-text-secondary mb-1.5">Email</label>
+                <label className="block text-xs font-medium text-text-secondary mb-1.5">Username</label>
                 <input
                   className="input"
-                  type="email"
-                  placeholder="trader@example.com"
+                  placeholder="Tradovate username"
                   value={form.email}
                   onChange={(e) => update('email', e.target.value)}
                 />
@@ -250,6 +251,18 @@ export function AddConnectionDialog({ open, onClose }: Props) {
                   value={form.password}
                   onChange={(e) => update('password', e.target.value)}
                 />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-text-secondary mb-1.5">App ID</label>
+                <input
+                  className="input"
+                  placeholder="e.g. MyTradingApp"
+                  value={form.appId}
+                  onChange={(e) => update('appId', e.target.value)}
+                />
+                <p className="text-[10px] mt-1 font-mono" style={{ color: 'var(--text-muted)' }}>
+                  Register your app at tradovate.com to get an App ID
+                </p>
               </div>
             </>
           )}

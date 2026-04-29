@@ -1,8 +1,8 @@
-# Trade Copier — Design Document
+# Cascade — Design Document
 
 ## Overview
 
-A desktop application for copying trades in real-time between Tradovate and TopstepX/ProjectX futures trading accounts. Designed for prop firm traders who manage multiple evaluation combines and funded accounts.
+A desktop application for copying trades in real-time between Tradovate and TopstepX futures trading accounts. Designed for prop firm traders who manage multiple evaluation combines and funded accounts.
 
 ---
 
@@ -23,20 +23,20 @@ A desktop application for copying trades in real-time between Tradovate and Tops
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
-│ [logo] Trade Copier                                 (3/4 ●) [─][□][×]│
+│ [logo] Cascade                                   (3/4 ●) [─][□][×]│
 ├──────────┬───────────────────────────────────────────────────────┤
 │          │                                                       │
-│  📊 ●    │  ┌─────────────────────────────────────────────────┐  │
+│  📊      │  ┌─────────────────────────────────────────────────┐  │
 │  Dashboard│  │  LEADER                                         │  │
 │          │  │  ┌─────────────────────────────────────────────┐ │  │
 │  🔗 ●    │  │  │  ● My Tradovate Demo  ▼                    │ │  │
 │  Accounts│  │  │  └─ ● ES Demo Acct #2  $52,430   Long 2 ES │ │  │
 │          │  │  └─────────────────────────────────────────────┘ │  │
-│  📋 ●    │  │  [▶ Start Copying]                              │  │
-│  Copy    │  └─────────────────────────────────────────────────┘  │
+│  👥      │  │  [▶ Start Copying]                              │  │
+│  Groups  │  └─────────────────────────────────────────────────┘  │
 │          │                                                       │
-│  👥      │  ┌─────────────────────────────────────────────────┐  │
-│  Groups  │  │  FOLLOWERS                                       │  │
+│          │  ┌─────────────────────────────────────────────────┐  │
+│          │  │  FOLLOWERS                                       │  │
 │          │  │                                                 │  │
 │  ⚙       │  │  ● ES Demo Acct #1       ×1.0     [●─ ─ ─ ○]  │  │
 │  Settings│  │  ● Topstep Combine #1     ×0.5     [○─ ─ ─ ○]  │  │
@@ -73,15 +73,16 @@ Status dot legend:
 │  (main view) │    │  (manage all)  │    │  (broker login)  │
 └──────┬──────┘    └────────────────┘    └──────────────────┘
        │
-       │          ┌────────────────┐    ┌──────────────────┐
-       ├─────────▶│  Copy Settings │───▶│  Follower Config │
-       │          │  (leader+foll) │    │  (risk,multiplr) │
-       │          └────────────────┘    └──────────────────┘
-       │
        │          ┌────────────────┐
-       └─────────▶│  Groups        │
-                  │  (create/manage)│
-                  └────────────────┘
+       ├─────────▶│  Groups        │
+       │          │  (create/manage)│
+       │          └────────────────┘
+       │
+       │          ┌─────────────────────────┐
+       └─────────▶│  Follower Config Panel  │
+                  │  (risk, multiplier,     │
+                  │   order type toggles)   │
+                  └────────────────────────┘
 ```
 
 ---
@@ -91,9 +92,8 @@ Status dot legend:
 ```
 App
 ├── Sidebar
-│   ├── NavItem (Dashboard)  ● connection status summary
+│   ├── NavItem (Dashboard)  ● engine status + connection summary
 │   ├── NavItem (Accounts)   ● connection status summary
-│   ├── NavItem (Copy)       ● engine status
 │   ├── NavItem (Groups)
 │   └── NavItem (Settings)
 │   └── ConnectionStatusBar (aggregate: "3/4 ● Connected")
@@ -197,7 +197,7 @@ Reusable indicator dot used across all components. Renders as a small circle wit
   - Max lot size, min lot size
   - Max daily loss
   - Max open contracts
-  - Copy stop/limit orders (checkboxes)
+   - Copy order types (Market/Stop/Limit checkboxes)
 
 ### AddFollowerButton
 - Opens a dialog with two tabs: "Accounts" and "Groups"
@@ -227,9 +227,9 @@ Reusable indicator dot used across all components. Renders as a small circle wit
 
 ### Sidebar Connection Summary
 - **Aggregate StatusIndicator** (`sm` size) shown next to each nav item based on the accounts relevant to that view
-  - Dashboard: status of the leader account + all active followers
+  - Dashboard: status of the leader account + all active followers + engine running indicator
   - Accounts: worst status across all connections
-  - Copy: status of the engine (running/stopped/errored)
+  - Groups: aggregate status across all group members
 - **ConnectionStatusBar** pinned at sidebar bottom — shows aggregate count: `"3/4 ● Connected"`
   - Tooltip on hover expands to per-connection breakdown:
     ```

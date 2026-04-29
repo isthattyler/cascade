@@ -1,8 +1,8 @@
-# Trade Copier — Architecture
+# Cascade — Architecture
 
 ## Overview
 
-Trade Copier is a local-first Electron desktop application that connects to Tradovate and TopstepX/ProjectX brokerage accounts, enabling real-time trade copying from a designated leader account to multiple follower accounts with minimal latency.
+Cascade is a local-first Electron desktop application that connects to Tradovate and TopstepX brokerage accounts, enabling real-time trade copying from a designated leader account to multiple follower accounts with minimal latency.
 
 ---
 
@@ -15,9 +15,9 @@ Trade Copier is a local-first Electron desktop application that connects to Trad
 │  ┌────────────────────────────────────────────────────────┐  │
 │  │              Renderer Process (React + Vite)            │  │
 │  │                                                         │  │
-│  │  ┌──────────┐  ┌──────────┐  ┌────────┐  ┌────────┐   │  │
-│  │  │ Dashboard │  │ Accounts │  │ Groups │  │Settings│   │  │
-│  │  └──────────┘  └──────────┘  └────────┘  └────────┘   │  │
+  │  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │  │
+  │  │  │ Dashboard │  │ Accounts │  │  Groups  │  │ Settings │   │  │
+  │  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │  │
 │  │                                                         │  │
 │  │  State: Zustand  │  UI: React  │  Styling: Tailwind    │  │
 │  └───────────────────────┬─────────────────────────────────┘  │
@@ -169,7 +169,8 @@ Stateless order mapping:
 - **Lot multiplier**: `follower_qty = round(leader_qty * rule.lot_multiplier, min=rule.min_lot_size, max=rule.max_lot_size)`
 - **Direction**: `same` (buy→buy), `reverse` (buy→sell), `both` (mirror with configurable offset)
 - **Symbol mapping**: identical tickers assumed by default (ES, NQ, CL, etc.); extensible via symbol_map table
-- **Order type passthrough**: market, limit, stop market, stop limit
+- **Order type passthrough**: preserves leader's order type (market, limit, stop, stop_limit) on fill events; position events always emit market
+- **Type guards**: `copy_market`, `copy_stops`, `copy_limits` booleans control which order types are copied
 
 ### `src/main/engine/RiskManager.ts`
 Per-follower risk checks before order submission:
@@ -217,6 +218,7 @@ CREATE TABLE copy_rules (
   max_open_contracts INTEGER,
   copy_stops       INTEGER NOT NULL DEFAULT 1,
   copy_limits      INTEGER NOT NULL DEFAULT 1,
+  copy_market      INTEGER NOT NULL DEFAULT 1,
   UNIQUE(leader_account, follower_account)
 );
 
@@ -280,13 +282,13 @@ CREATE TABLE symbol_map (
 | **Entity system** | Standardized CRUD: `/entityType/list`, `/entityType/item`, `/entityType/find` |
 | **Rate limits** | Variable per endpoint; implement retry with backoff |
 
-### TopstepX / ProjectX
+### TopstepX
 
 | Aspect | Detail |
 |---|---|
 | **Base URL** | `https://api.topstepx.com` |
 | **Auth** | `POST /api/Auth/loginKey` with `userName` + `apiKey` → returns JWT `token` |
-| **Real-time** | REST polling at 500ms interval for `/api/Position/searchOpen` |
+| **Real-time** | REST polling at 2000ms interval for `/api/Position/searchOpen` |
 | **REST endpoints** | `/api/Account/search`, `/api/Position/searchOpen`, `/api/Order/place`, `/api/Order/cancel`, `/api/Trade/search`, `/api/Contract/search` |
 | **Place order** | `POST /api/Order/place` with `{ accountId, contractId, type, side, size, limitPrice?, stopPrice? }` |
 | **Demo detection** | `account.simulated` field; set `isLive = !account.simulated` after login |
@@ -320,7 +322,7 @@ CREATE TABLE symbol_map (
 ## Project Structure
 
 ```
-trade-copier/
+cascade/
 ├── package.json
 ├── tsconfig.json
 ├── electron-builder.yml

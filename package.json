@@ -1,0 +1,55 @@
+{
+  "name": "trade-copier",
+  "version": "1.0.0",
+  "description": "Trade Copier — Copy trades between Tradovate and TopstepX accounts",
+  "main": "dist/main/index.js",
+  "scripts": {
+    "dev:main": "tsup src/main/index.ts --out-dir dist/main --watch --format cjs --external electron --external better-sqlite3 --external ws",
+    "dev:preload": "tsup src/renderer/preload/preload.ts --out-dir dist/preload --watch --format cjs --external electron",
+    "dev:renderer": "vite build --watch --mode development",
+    "dev:electron": "wait-on dist/main/index.js dist/preload/preload.js dist/renderer/index.html && electron .",
+    "dev": "concurrently \"npm run dev:main\" \"npm run dev:preload\" \"npm run dev:renderer\" \"npm run dev:electron\"",
+    "build:main": "tsup src/main/index.ts --out-dir dist/main --format cjs --external electron --external better-sqlite3 --external ws",
+    "build:preload": "tsup src/renderer/preload/preload.ts --out-dir dist/preload --format cjs --external electron",
+    "build:renderer": "vite build",
+    "build": "npm run build:main && npm run build:preload && npm run build:renderer",
+    "start": "electron .",
+    "package": "npm run build && electron-builder"
+  },
+  "keywords": [
+    "trading",
+    "futures",
+    "tradovate",
+    "topstep",
+    "copier"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.15.2",
+    "better-sqlite3": "^12.9.0",
+    "lucide-react": "^1.14.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "ws": "^8.20.0",
+    "zustand": "^5.0.12"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@types/ws": "^8.18.1",
+    "@vitejs/plugin-react": "^6.0.1",
+    "autoprefixer": "^10.5.0",
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.1.0",
+    "electron": "^41.3.0",
+    "electron-builder": "^26.8.1",
+    "postcss": "^8.5.12",
+    "tailwindcss": "^3.4.19",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.10",
+    "wait-on": "^9.0.5"
+  }
+}

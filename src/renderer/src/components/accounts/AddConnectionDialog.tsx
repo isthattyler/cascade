@@ -186,7 +186,7 @@ export function AddConnectionDialog({ open, onClose }: Props) {
               <BrokerCard
                 broker="projectx"
                 label="TopstepX"
-                subtitle="ProjectX API"
+                subtitle="TopstepX API"
                 brandColor="#00C853"
                 selected={!isTradovate}
                 onClick={() => update('broker_type', 'projectx')}

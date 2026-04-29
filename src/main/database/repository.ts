@@ -82,7 +82,8 @@ export class DatabaseRepository {
       input.direction ?? 'same', input.lot_multiplier ?? 1.0,
       input.max_lot_size ?? null, input.min_lot_size ?? null,
       input.max_daily_loss ?? null, input.max_open_contracts ?? null,
-      input.copy_stops ?? 1, input.copy_limits ?? 1
+      input.copy_stops != null ? (input.copy_stops ? 1 : 0) : 1,
+      input.copy_limits != null ? (input.copy_limits ? 1 : 0) : 1
     )
     return this.db.prepare('SELECT * FROM copy_rules WHERE id = ?').get(id) as CopyRule
   }
@@ -94,7 +95,7 @@ export class DatabaseRepository {
     for (const [key, value] of Object.entries(data)) {
       if (key === 'id') continue
       fields.push(`${key} = ?`)
-      values.push(value)
+      values.push(typeof value === 'boolean' ? (value ? 1 : 0) : value)
     }
 
     if (fields.length > 0) {

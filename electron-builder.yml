@@ -1,11 +1,12 @@
-appId: com.trade-copier.app
-productName: Trade Copier
+appId: com.cascade.app
+productName: Cascade
 directories:
   output: release
   buildResources: build
 files:
   - dist/**/*
   - package.json
+icon: build/icon.png
 win:
   target:
     - nsis

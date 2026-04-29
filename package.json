@@ -1,7 +1,7 @@
 {
-  "name": "trade-copier",
+  "name": "cascade",
   "version": "1.0.0",
-  "description": "Trade Copier — Copy trades between Tradovate and TopstepX accounts",
+  "description": "Cascade — Real-time trade copier for Tradovate and TopstepX accounts",
   "main": "dist/main/index.js",
   "scripts": {
     "dev:main": "tsup src/main/index.ts --out-dir dist/main --watch --format cjs --external electron --external better-sqlite3 --external ws",
@@ -47,6 +47,7 @@
     "electron": "^41.3.0",
     "electron-builder": "^26.8.1",
     "postcss": "^8.5.12",
+    "sharp": "^0.34.5",
     "tailwindcss": "^3.4.19",
     "tsup": "^8.5.1",
     "typescript": "^6.0.3",

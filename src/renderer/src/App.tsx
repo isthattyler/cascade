@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useStore } from './store'
+import { AppLogo } from './components/shared/AppLogo'
 import { DashboardPage } from './pages/DashboardPage'
 import { AccountsPage } from './pages/AccountsPage'
 import { CopyPage } from './pages/CopyPage'
@@ -68,10 +69,10 @@ function App() {
   return (
     <div className="h-screen flex flex-col" style={{ background: 'var(--bg-deep)', color: 'var(--text-primary)' }}>
       {/* Title Bar */}
-      <header className="draggable h-10 flex items-center px-4 shrink-0"
-        style={{ background: 'var(--bg-surface)', borderBottom: '1px solid var(--border)' }}
-      >
-        <span className="font-display text-sm tracking-wide" style={{ color: 'var(--accent)' }}>Trade Copier</span>
+        <header className="draggable h-10 flex items-center px-4 shrink-0"
+          style={{ background: 'var(--bg-surface)', borderBottom: '1px solid var(--border)' }}
+        >
+          <AppLogo size={16} wordmarkSize="sm" />
         <div className="ml-auto flex items-center gap-2" style={{ color: 'var(--text-muted)' }}>
           <span className="font-mono text-[10px]">
             {connected}/{connections.length} active
@@ -86,6 +87,9 @@ function App() {
         <nav className="w-48 shrink-0 flex flex-col p-2 gap-0.5"
           style={{ background: 'var(--bg-surface)', borderRight: '1px solid var(--border)' }}
         >
+          <div className="px-3 py-3 mb-1">
+            <AppLogo size={20} wordmarkSize="md" />
+          </div>
           {nav.map((item) => {
             const isActive = page === item.id
             return (

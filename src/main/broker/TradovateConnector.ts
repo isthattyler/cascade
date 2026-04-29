@@ -132,7 +132,7 @@ export class TradovateConnector extends BaseConnector {
       email: this.credentials.email,
       password: this.credentials.password,
       deviceId: this.deviceId,
-      deviceName: 'Trade Copier',
+      deviceName: 'Cascade',
       cid: 0,
       appRedirectUrl: '',
       redirectUrl: '',

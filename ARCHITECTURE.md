@@ -284,7 +284,7 @@ CREATE TABLE symbol_map (
 
 | Aspect | Detail |
 |---|---|
-| **Base URL** | `https://gateway.projectx.com` |
+| **Base URL** | `https://api.topstepx.com` |
 | **Auth** | `POST /api/Auth/loginKey` with `userName` + `apiKey` → returns JWT `token` |
 | **Real-time** | REST polling at 500ms interval for `/api/Position/searchOpen` |
 | **REST endpoints** | `/api/Account/search`, `/api/Position/searchOpen`, `/api/Order/place`, `/api/Order/cancel`, `/api/Trade/search`, `/api/Contract/search` |

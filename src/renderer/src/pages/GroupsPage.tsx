@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useStore } from '../store'
 import { GroupCard } from '../components/groups/GroupCard'
 import { GroupEditor } from '../components/groups/GroupEditor'
+import { Users } from 'lucide-react'
 import type { Group, Account } from '../../../shared/types'
 
 export function GroupsPage() {
@@ -74,7 +75,7 @@ export function GroupsPage() {
 
       {groups.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <span className="text-3xl mb-3 opacity-30">👥</span>
+          <Users size={32} className="mb-3" style={{ opacity: 0.3, color: 'var(--text-muted)' }} />
           <p className="font-body text-sm" style={{ color: 'var(--text-secondary)' }}>
             No groups yet.
           </p>

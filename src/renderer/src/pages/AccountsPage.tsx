@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useStore } from '../store'
 import { ConnectionCard } from '../components/accounts/ConnectionCard'
 import { AddConnectionDialog } from '../components/accounts/AddConnectionDialog'
+import { Plug } from 'lucide-react'
 
 export function AccountsPage() {
   const connections = useStore((s) => s.connections)
@@ -28,7 +29,7 @@ export function AccountsPage() {
 
       {connections.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <span className="text-3xl mb-3 opacity-30">🔗</span>
+          <Plug size={32} className="mb-3" style={{ opacity: 0.3, color: 'var(--text-muted)' }} />
           <p className="font-body text-sm" style={{ color: 'var(--text-secondary)' }}>
             No connections yet.
           </p>

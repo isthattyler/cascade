@@ -1,18 +1,37 @@
 appId: com.cascade.app
 productName: Cascade
+copyright: Copyright © 2026 Cascade
 directories:
   output: release
   buildResources: build
 files:
   - dist/**/*
   - package.json
+  - node_modules/better-sqlite3/**/*
+  - node_modules/ws/**/*
+asar: true
 icon: build/icon.png
 win:
+  icon: build/icon.png
   target:
-    - nsis
+    - target: nsis
+      arch:
+        - x64
 mac:
+  icon: build/icon.png
+  category: public.app-category.finance
   target:
-    - dmg
+    - target: dmg
+      arch:
+        - x64
+        - arm64
+  hardenedRuntime: true
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.plist
 nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
+  installerIcon: build/icon.png
+  uninstallerIcon: build/icon.png
+  shortcutName: Cascade
+artifactName: ${productName}-${version}-${os}-${arch}.${ext}
